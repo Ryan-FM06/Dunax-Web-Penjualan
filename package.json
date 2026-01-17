@@ -1,0 +1,26 @@
+{
+  "name": "dunax-farm",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "serve  ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "prettier": "^3.8.0",
+    "serve": "^14.2.5"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2"
+  },
+  "description": "",
+  "main": "index.js"
+}
