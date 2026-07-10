@@ -1,9 +1,12 @@
 import AppBar from '../../components/appbar.js'
 import RiwayatPagePresenter from './riwayatpage-presenter.js'
+import FloatingCart from '../../components/FloatingChart.js'
 
 const RiwayatPage = {
   async render() {
     return `
+      ${AppBar.render()}
+
       <div class="page-wrapper">
         <section class="detail-container">
 
@@ -43,11 +46,15 @@ const RiwayatPage = {
 
         </section>
       </div>
+
+      ${FloatingCart.render()}
     `
   },
 
   async afterRender() {
-    new RiwayatPagePresenter().init()
+    AppBar.afterRender();
+    await new RiwayatPagePresenter().init()
+    FloatingCart.afterRender()
   },
 }
 

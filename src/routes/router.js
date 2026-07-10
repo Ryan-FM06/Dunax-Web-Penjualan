@@ -1,28 +1,40 @@
 import routes from './route.js'
+import AppBar from '../components/appbar.js'
+import { getAuth } from '../utils/authStorage.js'
 
-const Router = {
-  async renderPage(content) {
-    const hash = window.location.hash.slice(1).toLowerCase() || '/'
-    const page = routes[hash]
+const Router = async () => {
+  const content = document.querySelector('#mainContent')
+  const header = document.querySelector('#appBar')
 
-    if (!page) {
-      content.innerHTML = '<h2>404</h2>'
-      return
-    }
+  const rawHash = window.location.hash.slice(1) || '/'
+  const path = rawHash.split('?')[0].toLowerCase()
+  const route = routes[path]
 
-    content.innerHTML = await page.render()
-    await page.afterRender?.()
-  },
+  const { isLogin } = getAuth()
 
-  init({ content }) {
-    window.addEventListener('hashchange', () => {
-      this.renderPage(content)
-    })
+  if (!route) {
+    header.innerHTML = AppBar.render()
+    content.innerHTML = '<h2>404 Page Not Found</h2>'
+    return
+  }
 
-    window.addEventListener('load', () => {
-      this.renderPage(content)
-    })
-  },
+  if (!isLogin && route.public !== true) {
+    window.location.hash = '#/login'
+    return
+  }
+
+  const simpleHeaderPaths = ['/login', '/register', '/verify-email', '/forgot-password', '/reset-password']
+
+  if (simpleHeaderPaths.includes(path)) {
+    header.innerHTML = AppBar.render({ simple: true })
+  } else {
+    header.innerHTML = AppBar.render()
+  }
+
+  const page = route.page
+  content.innerHTML = await page.render()
+  page.afterRender?.()
+  AppBar.afterRender?.()
 }
 
 export default Router

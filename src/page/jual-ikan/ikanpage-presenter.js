@@ -11,6 +11,7 @@ class IkanPagePresenter {
 
     this._initState()
     this._bindCounter()
+    this._bindCartButton() // ⬅️ PENTING
     this._render()
     this._bindPaymentButton()
   }
@@ -46,9 +47,55 @@ class IkanPagePresenter {
   _updateJumlah(nama, delta) {
     this.state[nama] = Math.max(0, this.state[nama] + delta)
 
-    document.querySelector(`.jumlah-input[data-nama="${nama}"]`).value = this.state[nama]
+    document.querySelector(
+      `.jumlah-input[data-nama="${nama}"]`
+    ).value = this.state[nama]
 
     this._render()
+  }
+
+  /* ================= CART ================= */
+  _bindCartButton() {
+    document.querySelectorAll('.cart-row-btn').forEach((btn) => {
+      btn.onclick = () => {
+        const nama = btn.dataset.nama
+        const jumlah = this.state[nama]
+
+        if (jumlah <= 0) {
+          alert('Jumlah masih 0')
+          return
+        }
+
+        const produk = this.data.tersedia.find((p) => p.nama === nama)
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]')
+
+        const existing = cart.find((item) => item.nama === nama)
+
+        if (existing) {
+          existing.jumlah += jumlah
+        } else {
+          cart.push({
+            nama,
+            jumlah,
+            satuan: 'Ekor',
+            harga: produk.harga,
+          })
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart))
+        window.dispatchEvent(new Event('storage'))
+
+        // reset state
+        this.state[nama] = 0
+        document.querySelector(
+          `.jumlah-input[data-nama="${nama}"]`
+        ).value = 0
+
+        this._render()
+
+        alert(`${nama} masuk keranjang 🛒`)
+      }
+    })
   }
 
   /* ================= DATA ================= */
@@ -117,7 +164,10 @@ class IkanPagePresenter {
 
       const total = pesanan.reduce((a, b) => a + b.subtotal, 0)
 
-      localStorage.setItem('checkoutData', JSON.stringify({ produk, total }))
+      localStorage.setItem(
+        'checkoutData',
+        JSON.stringify({ produk, total })
+      )
 
       window.location.hash = '#/payment'
     }

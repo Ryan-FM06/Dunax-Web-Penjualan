@@ -1,6 +1,11 @@
+import FloatingCart from '../../components/FloatingChart.js'
+import MapComponent from '../../components/map.js'
+
 const HomePage = {
   render() {
     return `
+      ${FloatingCart.render()}
+
       <!-- HERO -->
       <section class="hero">
         <div class="hero-slide active">
@@ -50,46 +55,47 @@ const HomePage = {
 
         <button class="hero-btn prev">‹</button>
         <button class="hero-btn next">›</button>
-            </section>
-
-     <!-- WELCOME SECTION -->
-<section class="welcome-section">
-  <div class="welcome-card">
-    <h2>Selamat Datang di Portal Digital Dunax Farm</h2>
-
-    <p>
-      Dunax Farm menghadirkan platform pemesanan berbasis web yang dirancang untuk mempermudah
-      pelanggan dalam memperoleh produk peternakan secara cepat, praktis, dan terpercaya.
-      Sistem ini difokuskan pada kemudahan akses, kecepatan proses, serta kenyamanan pengguna.
-    </p>
-
-    <p>
-      Melalui portal ini, Anda dapat melakukan beberapa layanan utama berikut:
-    </p>
-
-    <ul class="welcome-list">
-      <li>Pemesanan telur fertil berkualitas unggul dari berbagai lini unggas</li>
-      <li>Pemesanan DoC (Day Old Chick) dengan standar kesehatan terjamin</li>
-      <li>Pantauan ketersediaan produk secara real-time</li>
-      <li>Akses informasi pemesanan dan status antrian secara transparan</li>
-    </ul>
-
-    <p class="welcome-footer">
-      Platform ini akan terus dikembangkan secara bertahap untuk mendukung kebutuhan peternakan modern
-      serta meningkatkan kualitas layanan bagi seluruh mitra dan pelanggan.
-    </p>
-
-    <div class="welcome-action">
-      <a href="#/antrian" class="btn-primary">Lihat Daftar Antrian Saat Ini</a>
-    </div>
-  </div>
-</section>
+      </section>
 
       <!-- MAIN LAYOUT -->
       <section class="home-layout">
-        <div class="main-content">
-          <div class="content-card">
 
+        <!-- LEFT CONTENT -->
+        <div class="main-content">
+
+          <!-- WELCOME SECTION -->
+          <section class="welcome-section">
+            <div class="welcome-card">
+              <h2>Selamat Datang di Website DUNAX FARM (DNX).</h2>
+
+              <p>
+                Dunax Farm menghadirkan platform pemesanan berbasis web yang dirancang untuk mempermudah
+                pelanggan dalam memperoleh produk peternakan secara cepat, praktis, dan terpercaya.
+                Sistem ini difokuskan pada kemudahan akses, kecepatan proses, serta kenyamanan pengguna.
+              </p>
+
+              <p>Melalui portal ini, Anda dapat melakukan beberapa layanan utama berikut:</p>
+
+              <ul class="welcome-list">
+                <li class="item telur"> Pemesanan Telur Fertil Kuntara 4 berkualitas unggul</li>
+                <li class="item doc"> Pemesanan DOC (Day Old Chick) Kuntara 4</li>
+                <li class="item pantau"> Pantauan ketersediaan produk real-time</li>
+                <li class="item info"> Akses informasi pemesanan & antrian</li>
+              </ul>
+
+              <p class="welcome-footer">
+                Platform ini akan terus dikembangkan secara bertahap untuk mendukung kebutuhan peternakan modern
+                serta meningkatkan kualitas layanan bagi seluruh mitra dan pelanggan.
+              </p>
+
+              <div class="welcome-action">
+                <a href="#/antrian" class="btn-primary">Lihat Daftar Antrian</a>
+              </div>
+            </div>
+          </section>
+
+          <!-- PRODUCT AREA -->
+          <div class="content-card">
             <section class="search-section">
               <input type="text" id="searchInput" placeholder="Cari produk ternak..." />
             </section>
@@ -97,37 +103,44 @@ const HomePage = {
             <section class="product-grid">
 
               <div class="product-card">
-                <img src="./src/assets/Photos/ayammm.webp" />
-                <h3>Ayam</h3>
-                <p>Menjual aneka Ayam dan Telur dengan harga yang Murah</p>
+                <img src="./src/assets/Photos/Kuntara.jpg" />
+                <h3>Ayam Kuntara 4</h3>
+                <p>Menjual Telur Fertil, DOC, Pullet, Ayam Pedaging Konsumsi, Telur Konsumsi, dan Telur Ayam Kampung.</p>
                 <a href="#/jual-ayam" class="btn-buy">Beli Sekarang</a>
               </div>
 
               <div class="product-card">
+                <img src="./src/assets/Photos/BEBEK.jpg" />
+                <h3>Bebek Konsumsi</h3>
+                <p>Menjual Bebek untuk Konsumsi dan Pembibtan dengan Kualitas Unggul dan Terbaik.</p>
+                <a href="#/jual-bebek" class="btn-buy">Beli Sekarang</a>
+              </div>
+
+              <div class="product-card">
                 <img src="./src/assets/Photos/kambing.jpg" />
-                <h3>Kambing</h3>
-                <p>Menjual Kambing dengan harga yang murah</p>
+                <h3>Kambing Jawarandu</h3>
+                <p>Menjual Kambing Jawarandu untuk Pembibitan dan Keperluan Konsumsi (Sate, Aqiqah, dan Kurban).</p>
                 <a href="#/jual-kambing" class="btn-buy">Beli Sekarang</a>
               </div>
 
               <div class="product-card">
                 <img src="./src/assets/Photos/sapi.webp" />
                 <h3>Sapi</h3>
-                <p>Menjual Sapi dan Susu dengan harga yang murah</p>
+                <p>Menjual Sapi untuk Pembibitan, Keperluan Kurban, dan Konsumsi dengan kualitas unggulan.</p>
                 <a href="#/jual-sapi" class="btn-buy">Beli Sekarang</a>
               </div>
 
               <div class="product-card">
-                <img src="./src/assets/Photos/ikan.webp" />
+                <img src="./src/assets/Photos/gurame.webp" />
                 <h3>Ikan</h3>
-                <p>Menjual aneka Ikan ternak dengan harga yang murah</p>
+                <p>Menjual aneka Ikan ternak konsumsi jenis lele dan gurame.</p>
                 <a href="#/jual-ikan" class="btn-buy">Beli Sekarang</a>
               </div>
 
               <div class="product-card">
                 <img src="./src/assets/Photos/sayur.jpg" />
                 <h3>Sayuran</h3>
-                <p>Menjual Aneka Macam Sayur dengan kualitas terbaik</p>
+                <p>Menjual Aneka Macam Sayur dengan kualitas terbaik.</p>
                 <a href="#/jual-sayur" class="btn-buy">Beli Sekarang</a>
               </div>
 
@@ -135,33 +148,42 @@ const HomePage = {
           </div>
         </div>
 
+        <!-- SIDEBAR -->
         <aside class="sidebar">
-  <div class="sidebar-card">
-    <h3>Dunax Farm</h3>
+          <div class="sidebar-card">
+            <h3>DUNAX FARM</h3>
 
-    <!-- LOGO -->
-    <img 
-      src="./src/assets/icon/Logooooo.png" 
-      alt="Logo Dunax Farm" 
-      class="sidebar-logo" 
-    />
+            <p class="sidebar-tagline-card">
+              Integrasi peternakan secara alami dan non kimia
+            </p>
 
-    <p class="sidebar-desc">
-      Menjual aneka macam hasil ternak dan kebun dengan kualitas terbaik dan murah meriah.
-    </p>
+            <img 
+              src="./src/assets/icon/Logooooo.png" 
+              alt="Logo Dunax Farm" 
+              class="sidebar-logo" 
+            />
+
+            <p class="sidebar-desc">
+              Menjual aneka macam hasil ternak dan kebun dengan kualitas terbaik dan murah meriah.
+            </p>
 
             <table class="info-table">
               <tr><th>Email</th><td>-</td></tr>
               <tr><th>Kontak</th><td>-</td></tr>
               <tr><th>Lokasi</th><td>Wonogiri, Jawa Tengah</td></tr>
             </table>
+
+            ${MapComponent.render()}
           </div>
         </aside>
+
       </section>
     `
   },
 
   afterRender() {
+    FloatingCart.afterRender()
+
     const slides = document.querySelectorAll('.hero-slide')
     const nextBtn = document.querySelector('.hero-btn.next')
     const prevBtn = document.querySelector('.hero-btn.prev')
@@ -212,6 +234,7 @@ const HomePage = {
         card.style.display = title.includes(keyword) ? 'block' : 'none'
       })
     })
+    MapComponent.afterRender()
   },
 }
 

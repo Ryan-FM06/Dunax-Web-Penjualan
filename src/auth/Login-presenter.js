@@ -1,55 +1,71 @@
-const LoginPresenter = {
-  init() {
-    const form = document.querySelector('#loginForm')
-    if (!form) return
+import Notification from '../components/Notifications.js';
+import { BASE_URL } from '../config/api.js';
+import { saveAuth } from '../utils/authStorage.js';
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
+export const handleLogin = async (email, password, rememberMe) => {
 
-      const email = document.querySelector('#email').value.trim()
-      const password = document.querySelector('#password').value.trim()
+    try{
 
-      if (!email || !password) {
-        alert('Email dan password wajib diisi')
-        return
-      }
+        const response = await fetch(
+            `${BASE_URL}/login`,
+            {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({
+                    email,
+                    password
+                })
+            }
+        );
 
-      try {
-        const response = await fetch('http://localhost:3000/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        })
+        const result = await response.json();
 
-        const result = await response.json()
+        if(response.ok){
 
-        if (!response.ok) {
-          alert(result.message || 'Login gagal')
-          return
+            saveAuth(result.data, rememberMe);
+
+            Notification.show(
+                'Login berhasil!',
+                'success'
+            );
+
+            setTimeout(()=>{
+                window.location.hash='#/home';
+            },1000);
+
+            return;
         }
 
-        // 🔥 AMBIL DATA DARI result.data (BUKAN result.user)
-        const user = {
-          email: result.data.email,
+        if(response.status===403){
+
+            Notification.show(
+                'Email belum diverifikasi.',
+                'error'
+            );
+
+            setTimeout(()=>{
+
+                window.location.hash=
+                `#/verify-email?email=${encodeURIComponent(email)}`;
+
+            },1000);
+
+            return;
         }
 
-        // ✅ SIMPAN LOGIN STATE (INI YANG DIPAKE APPBAR)
-        localStorage.setItem('isLogin', 'true')
-        localStorage.setItem('currentUser', JSON.stringify(user))
+        Notification.show(
+            result.message,
+            'error'
+        );
 
-        console.log('✅ LOGIN SUCCESS:', user)
+    }
+    catch(err){
 
-        // 🔥 PINDAH KE HOME
-        window.location.hash = '#/home'
-        window.location.reload()
-      } catch (err) {
-        console.error('LOGIN ERROR:', err)
-        alert('Login gagal')
-      }
-    })
-  },
-}
-
-export default LoginPresenter
+        Notification.show(
+            'Koneksi ke server gagal!',
+            'error'
+        );
+    }
+};

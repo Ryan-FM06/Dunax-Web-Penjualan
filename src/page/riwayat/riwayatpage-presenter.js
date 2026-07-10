@@ -1,91 +1,65 @@
-class RiwayatPagePresenter {
-  init() {
-    this._renderRiwayat()
-    this._initPdfButton()
-  }
+import { BASE_URL } from '../../config/api.js'
 
-  _renderRiwayat() {
+class RiwayatPagePresenter {
+  async init() {
     const table = document.getElementById('riwayatTable')
     const totalEl = document.getElementById('grandTotal')
 
-    const riwayat = JSON.parse(localStorage.getItem('riwayatPembelian')) || []
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'))
 
-    if (riwayat.length === 0) {
-      table.innerHTML = `
-        <tr>
-          <td colspan="7" style="text-align:center;">
-            Belum ada riwayat pembelian
-          </td>
-        </tr>
-      `
+    if (!currentUser) {
+      table.innerHTML = `<tr><td colspan="7">Silakan login untuk melihat riwayat.</td></tr>`
       totalEl.textContent = 'Rp 0'
       return
     }
 
-    let grandTotal = 0
+    table.innerHTML = `<tr><td colspan="7">Memuat data...</td></tr>`
+
+    let pesanan = []
+
+    try {
+      const res = await fetch(`${BASE_URL}/orders?user_id=${currentUser.id}`)
+      const result = await res.json()
+
+      if (result.status === 'success') {
+        pesanan = result.data
+      }
+    } catch (err) {
+      console.error('❌ Gagal ambil riwayat:', err)
+      table.innerHTML = `<tr><td colspan="7">Gagal memuat data, coba refresh.</td></tr>`
+      totalEl.textContent = 'Rp 0'
+      return
+    }
+
+    if (!pesanan.length) {
+      table.innerHTML = `<tr><td colspan="7">Belum ada riwayat</td></tr>`
+      totalEl.textContent = 'Rp 0'
+      return
+    }
+
+    let grand = 0
     table.innerHTML = ''
 
-    riwayat.forEach((item) => {
-      grandTotal += item.total
+    pesanan.forEach((o) => {
+      grand += o.total
+      const tanggal = new Date(o.created_at).toLocaleString('id-ID')
 
       table.innerHTML += `
         <tr>
-          <td>${item.tanggal}</td>
-          <td>${item.nama}</td>
-          <td>${item.alamat}</td>
-          <td>${item.telepon}</td>
-          <td>${item.jumlah}</td>
-          <td>${item.metode}</td>
-          <td>Rp ${item.total.toLocaleString('id-ID')}</td>
+          <td>${tanggal}</td>
+          <td>${o.nama}</td>
+          <td>${o.alamat}</td>
+          <td>${o.telepon}</td>
+          <td>
+            ${o.produk.map((p) => `${p.nama} ${p.jumlah} ${p.satuan}`).join('<br>')}
+          </td>
+          <td>${o.metode}</td>
+          <td>Rp ${o.total.toLocaleString('id-ID')}</td>
         </tr>
       `
     })
 
-    totalEl.textContent = `Rp ${grandTotal.toLocaleString('id-ID')}`
-  }
-
-  _initPdfButton() {
-    const btn = document.getElementById('downloadPdf')
-    btn.addEventListener('click', () => this._downloadPdf())
-  }
-
-  _downloadPdf() {
-    const riwayat = JSON.parse(localStorage.getItem('riwayatPembelian')) || []
-
-    if (riwayat.length === 0) {
-      alert('Tidak ada data untuk diunduh')
-      return
-    }
-
-    // 🔥 AMBIL DARI GLOBAL
-    const { jsPDF } = window.jspdf
-    const doc = new jsPDF()
-
-    doc.text('Riwayat Pembelian', 14, 16)
-
-    const rows = riwayat.map((item) => [
-      item.tanggal,
-      item.nama,
-      item.alamat,
-      item.telepon,
-      item.jumlah,
-      item.metode,
-      `Rp ${item.total.toLocaleString('id-ID')}`,
-    ])
-
-    doc.autoTable({
-      head: [['Tanggal', 'Nama', 'Alamat', 'Telepon', 'Pesanan', 'Metode', 'Total']],
-      body: rows,
-      startY: 22,
-      styles: {
-        fontSize: 9,
-      },
-      headStyles: {
-        fillColor: [40, 40, 40],
-      },
-    })
-
-    doc.save('riwayat-pembelian.pdf')
+    totalEl.textContent = `Rp ${grand.toLocaleString('id-ID')}`
   }
 }
 

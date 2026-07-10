@@ -13,7 +13,9 @@ const AppBar = {
     const isLogin = localStorage.getItem('isLogin') === 'true'
 
     let currentUser = null
+
     const userStorage = localStorage.getItem('currentUser')
+
     if (userStorage) {
       try {
         currentUser = JSON.parse(userStorage)
@@ -22,111 +24,205 @@ const AppBar = {
       }
     }
 
+    const getInitials = (name = '') =>
+      name
+        .trim()
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .substring(0, 2)
+        .toUpperCase()
+
     const avatarLetter =
-      isLogin && currentUser?.email ? currentUser.email.charAt(0).toUpperCase() : 'U'
+      isLogin && currentUser?.full_name
+        ? getInitials(currentUser.full_name)
+        : 'U'
+
+    const avatarUrl = isLogin && currentUser?.email
+      ? `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(currentUser.email)}`
+      : 'https://api.dicebear.com/9.x/adventurer/svg?seed=user';
 
     return `
       <nav class="navbar">
         <div class="navbar-inner">
-          <div class="logo">Dunax Farm</div>
 
-          <!-- DESKTOP MENU -->
+          <div class="logo">DUNAX FARM</div>
+
           <ul class="nav-menu">
+
             <li><a href="#/home">Dashboard</a></li>
 
             <li class="nav-dropdown">
+
               <span class="dropdown-title" id="productDropdownBtn">
                 Beli Produk <span class="arrow">▾</span>
               </span>
 
               <div class="dropdown-panel" id="productDropdownPanel">
+
                 <div class="dropdown-group">
                   <div class="dropdown-label">Buat Pesanan Baru</div>
-                  <a href="#/jual-ayam">Tambah pesanan Ayam</a>
+
+                  <a href="#/jual-ayam">Tambah Pesanan Ayam Kuntara 4</a>
+                  <a href="#/jual-bebek">Tambah Pesanan Bebek</a>
+                  <a href="#/jual-kambing">Tambah pesanan Kambing Jawarandu</a>
                   <a href="#/jual-sapi">Tambah pesanan Sapi</a>
-                  <a href="#/jual-kambing">Tambah pesanan Kambing</a>
-                  <a href="#/jual-sayur">Tambah pesanan Sayur</a>
                   <a href="#/jual-ikan">Tambah pesanan Ikan</a>
+                  <a href="#/jual-sayur">Tambah pesanan Sayuran</a>
+
                 </div>
+
               </div>
+
             </li>
 
             <li><a href="#/riwayat">Riwayat</a></li>
 
             <li class="nav-account">
+
               ${
                 isLogin
                   ? `
-                  <div class="avatar-wrapper">
-                    <div class="avatar" id="avatarBtn">${avatarLetter}</div>
-                    <div class="avatar-dropdown" id="avatarDropdown">
-                      <div class="user-info">${currentUser?.email ?? '-'}</div>
-                      <button id="logoutBtn">Keluar</button>
-                    </div>
+                <div class="avatar-wrapper">
+
+                  <div
+                    class="avatar"
+                    id="avatarBtn"
+                    data-email="${currentUser?.email ?? ''}"
+                  >
+                    ${avatarLetter}
                   </div>
-                `
+
+                  <div class="avatar-dropdown" id="avatarDropdown">
+
+    <div class="user-header">
+
+        <div class="user-avatar">
+            ${avatarLetter}
+        </div>
+
+        <div class="user-detail">
+            <div class="user-name">
+                ${currentUser?.full_name}
+            </div>
+
+            <div class="user-email">
+                ${currentUser?.email}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="dropdown-menu">
+        <button id="logoutBtn">
+            Keluar
+        </button>
+    </div>
+
+</div>
+              `
                   : `<a href="#/login">Login</a>`
               }
+
             </li>
+
           </ul>
 
-          <!-- HAMBURGER -->
           <div class="hamburger" id="hamburger">
             <span></span>
             <span></span>
             <span></span>
           </div>
+
         </div>
       </nav>
 
-      <!-- MOBILE OVERLAY + SIDEBAR -->
       <div class="sidebar-overlay" id="sidebarOverlay">
+
         <aside class="mobile-sidebar" id="mobileSidebar">
+
           ${
             isLogin
               ? `
-              <div class="mobile-profile">
-                <div class="mobile-avatar">${avatarLetter}</div>
-                <div class="mobile-email">${currentUser?.email ?? '-'}</div>
+            <div class="mobile-profile">
+                <div class="mobile-avatar">
+                    ${avatarLetter}
+                </div>
+                
+                <div class="mobile-user">
+                    <div class="mobile-name">
+                        ${currentUser?.full_name}
+                    </div>
+                    
+                    <div class="mobile-email">
+                        ${currentUser?.email}
+                    </div>
+                </div>
               </div>
 
-              <nav class="mobile-menu">
-                <a href="#/home">Dashboard</a>
+            <nav class="mobile-menu">
 
-                <div class="mobile-nav-dropdown">
-                  <div class="mobile-dropdown-title" id="mobileProductBtn">
-                    Beli Produk <span class="arrow">▾</span>
-                  </div>
+              <a href="#/home">Dashboard</a>
 
-                  <div class="mobile-dropdown-panel" id="mobileProductPanel">
-                    <div class="dropdown-group">
-                      <div class="dropdown-label">Buat Pesanan Baru</div>
-                      <a href="#/jual-ayam">Tambah pesanan Ayam</a>
-                      <a href="#/jual-sapi">Tambah pesanan Sapi</a>
-                      <a href="#/jual-kambing">Tambah pesanan Kambing</a>
-                      <a href="#/jual-sayur">Tambah pesanan Sayur</a>
-                      <a href="#/jual-ikan">Tambah pesanan Ikan</a>
-                    </div>
-                  </div>
+              <div class="mobile-nav-dropdown">
+
+                <div
+                  class="mobile-dropdown-title"
+                  id="mobileProductBtn"
+                >
+                  Beli Produk
+                  <span class="arrow">▾</span>
                 </div>
 
-                <a href="#/riwayat">Riwayat</a>
-              </nav>
+                <div
+                  class="mobile-dropdown-panel"
+                  id="mobileProductPanel"
+                >
 
-              <button class="mobile-logout" id="mobileLogout">Keluar</button>
-            `
+                  <div class="dropdown-group">
+
+                    <div class="dropdown-label">
+                      Buat Pesanan Baru
+                    </div>
+
+                    <a href="#/jual-ayam">Tambah Pesanan Ayam Kuntara 4</a>
+                    <a href="#/jual-bebek">Tambah Pesanan Bebek</a>
+                    <a href="#/jual-kambing">Tambah pesanan Kambing Jawarandu</a>
+                    <a href="#/jual-sapi">Tambah pesanan Sapi</a>
+                    <a href="#/jual-ikan">Tambah pesanan Ikan</a>
+                    <a href="#/jual-sayur">Tambah pesanan Sayuran</a>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <a href="#/riwayat">Riwayat</a>
+
+            </nav>
+
+            <button
+              class="mobile-logout"
+              id="mobileLogout"
+            >
+              Keluar
+            </button>
+          `
               : `
-              <nav class="mobile-menu">
-                <a href="#/login">Login</a>
-              </nav>
-            `
+            <nav class="mobile-menu">
+              <a href="#/login">Login</a>
+            </nav>
+          `
           }
+
         </aside>
+
       </div>
     `
   },
 
-  afterRender() {
+  async afterRender() {
     const hamburger = document.querySelector('#hamburger')
     const sidebar = document.querySelector('#mobileSidebar')
     const overlay = document.querySelector('#sidebarOverlay')
@@ -143,13 +239,15 @@ const AppBar = {
     const logoutBtn = document.querySelector('#logoutBtn')
     const mobileLogout = document.querySelector('#mobileLogout')
 
-    /* HAMBURGER */
-    hamburger?.addEventListener('click', (e) => {
+    hamburger?.addEventListener('click', e => {
       e.stopPropagation()
-      const isOpen = sidebar.classList.contains('show')
-      sidebar.classList.toggle('show', !isOpen)
-      overlay.classList.toggle('show', !isOpen)
-      document.body.classList.toggle('lock-scroll', !isOpen)
+
+      const open = sidebar.classList.contains('show')
+
+      sidebar.classList.toggle('show', !open)
+      overlay.classList.toggle('show', !open)
+
+      document.body.classList.toggle('lock-scroll', !open)
     })
 
     overlay?.addEventListener('click', () => {
@@ -158,25 +256,21 @@ const AppBar = {
       document.body.classList.remove('lock-scroll')
     })
 
-    /* AVATAR */
-    avatarBtn?.addEventListener('click', (e) => {
+    avatarBtn?.addEventListener('click', e => {
       e.stopPropagation()
       avatarDropdown.classList.toggle('show')
     })
 
-    /* DESKTOP DROPDOWN */
-    productBtn?.addEventListener('click', (e) => {
+    productBtn?.addEventListener('click', e => {
       e.stopPropagation()
       productPanel.classList.toggle('show')
     })
 
-    /* MOBILE DROPDOWN */
-    mobileProductBtn?.addEventListener('click', (e) => {
+    mobileProductBtn?.addEventListener('click', e => {
       e.stopPropagation()
       mobileProductPanel.classList.toggle('show')
     })
 
-    /* LOGOUT */
     const logout = () => {
       localStorage.clear()
       window.location.hash = '#/login'
@@ -185,6 +279,12 @@ const AppBar = {
 
     logoutBtn?.addEventListener('click', logout)
     mobileLogout?.addEventListener('click', logout)
+
+    // klik di luar dropdown
+    document.addEventListener('click', () => {
+      avatarDropdown?.classList.remove('show')
+      productPanel?.classList.remove('show')
+    })
   },
 }
 

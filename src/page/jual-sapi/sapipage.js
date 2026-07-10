@@ -1,15 +1,18 @@
 import SapiPagePresenter from './sapipage-presenter.js'
 import SapiData from '../../data/Produk-sapi.js'
+import FloatingCart from '../../components/FloatingChart.js'
 
-const getSatuan = (nama) => (nama.toLowerCase().includes('susu') ? 'Liter' : 'Ekor')
+const getSatuan = (nama) =>
+  nama.toLowerCase().includes('susu') ? 'Liter' : 'Ekor'
 
 const SapiPage = {
   async render() {
     return `
+      ${FloatingCart.render()}
+
       <div class="page-wrapper">
         <section class="detail-container">
 
-          <!-- BANNER -->
           <div class="product-banner">
             <img src="src/assets/Photos/PI.jpg" class="banner-img" />
             <div class="banner-text">
@@ -18,72 +21,62 @@ const SapiPage = {
             </div>
           </div>
 
-          <!-- DAFTAR HARGA -->
           <div class="harga-section">
-            <h3>Daftar Harga</h3>
-            <div class="table-wrapper">
-              <table class="harga-table">
-                <thead>
-                  <tr>
-                    <th>Produk</th>
-                    <th>Harga</th>
-                    <th>Satuan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${SapiData.tersedia
-                    .map(
-                      (item) => `
-                    <tr>
-                      <td>${item.nama}</td>
-                      <td>Rp ${item.harga.toLocaleString('id-ID')}</td>
-                      <td>${getSatuan(item.nama)}</td>
-                    </tr>
-                  `,
-                    )
-                    .join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
+            <h3>Daftar Produk</h3>
 
-          <!-- TERSEDIA -->
-          <div class="form-group">
-            <label>Tersedia</label>
-
-            <div class="tersedia-list">
+            <div class="produk-grid">
               ${SapiData.tersedia
-                .map(
-                  (item) => `
-                <div class="counter-row kecil">
-                  <span class="produk-nama">${item.nama}</span>
+                .map((item) => {
+                  const satuan = getSatuan(item.nama)
 
-                  <div class="counter-box">
-                    <button class="minus-btn" data-nama="${item.nama}">-</button>
+                  return `
+                    <div class="produk-card">
+                      <div class="produk-info">
+                        <h4>${item.nama}</h4>
+                        <p class="harga">
+                          Rp ${item.harga.toLocaleString('id-ID')}
+                        </p>
+                        <span class="satuan">${satuan}</span>
+                      </div>
 
-                    <input
-                      class="jumlah-input"
-                      data-nama="${item.nama}"
-                      type="number"
-                      value="0"
-                      min="0"
-                      step="1"
-                    />
+                      <div class="counter-box">
+                        <button
+                          class="minus-btn"
+                          data-nama="${item.nama}"
+                        >−</button>
 
-                    <button class="plus-btn" data-nama="${item.nama}">+</button>
+                        <input
+                          class="jumlah-input"
+                          data-nama="${item.nama}"
+                          type="number"
+                          value="0"
+                          min="0"
+                          step="1"
+                        />
 
-                    <span class="satuan" data-nama="${item.nama}">
-                      ${getSatuan(item.nama)}
-                    </span>
-                  </div>
-                </div>
-              `,
-                )
+                        <button
+                          class="plus-btn"
+                          data-nama="${item.nama}"
+                        >+</button>
+
+                        <button
+                          class="cart-row-btn"
+                          data-nama="${item.nama}"
+                          title="Tambah ke keranjang"
+                        >
+                          <img 
+                            src="./src/assets/Photos/cart-empty.png" 
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;" 
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  `
+                })
                 .join('')}
             </div>
           </div>
 
-          <!-- RINGKASAN -->
           <div class="ringkasan-row">
             <strong>Pesanan</strong>
 
@@ -100,9 +93,7 @@ const SapiPage = {
 
                 <tbody id="ringkasanTable">
                   <tr class="empty-row">
-                    <td colspan="4" style="text-align:center; opacity:0.6;">
-                      Belum ada pesanan
-                    </td>
+                    <td colspan="4">Belum ada pesanan</td>
                   </tr>
                 </tbody>
 
@@ -116,9 +107,12 @@ const SapiPage = {
             </div>
           </div>
 
-          <!-- BUTTON -->
           <div class="button-center">
-            <button id="beliSekarang" class="btn-dunax">
+            <button
+              id="beliSekarang"
+              class="btn-dunax"
+              disabled
+            >
               Lanjut Pembayaran
             </button>
           </div>
@@ -129,8 +123,8 @@ const SapiPage = {
   },
 
   async afterRender() {
-    const presenter = new SapiPagePresenter(SapiData)
-    presenter.init()
+    FloatingCart.afterRender()
+    new SapiPagePresenter(SapiData).init()
   },
 }
 

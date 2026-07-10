@@ -1,13 +1,15 @@
 import AyamPagePresenter from './ayampage-presenter.js'
-import AyamData from '../../Data/Produk-ayam.js'
+import AyamData from '../../data/Produk-ayam.js'
+import FloatingCart from '../../components/FloatingChart.js'
 
 const AyamPage = {
   async render() {
     return `
+      ${FloatingCart.render()}
+
       <div class="page-wrapper">
         <section class="detail-container">
 
-          <!-- BANNER -->
           <div class="product-banner">
             <img src="src/assets/Photos/yam.jpg" class="banner-img" />
             <div class="banner-text">
@@ -16,77 +18,60 @@ const AyamPage = {
             </div>
           </div>
 
-          <!-- TABEL HARGA -->
           <div class="harga-section">
             <h3>Daftar Harga</h3>
 
-            <div class="table-wrapper">
-              <table class="harga-table">
-                <thead>
-                  <tr>
-                    <th>Produk</th>
-                    <th>Harga</th>
-                    <th>Satuan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${AyamData.tersedia
-                    .map((item) => {
-                      const isTelur = item.nama.toLowerCase().includes('telur')
-                      const satuan = isTelur ? 'Butir' : 'Ekor'
-
-                      return `
-                      <tr>
-                        <td>${item.nama}</td>
-                        <td>Rp ${item.harga.toLocaleString('id-ID')}</td>
-                        <td>${satuan}</td>
-                      </tr>
-                    `
-                    })
-                    .join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- TERSEDIA -->
-          <div class="form-group">
-            <label>Tersedia</label>
-
-            <div class="tersedia-list">
+            <div class="produk-grid">
               ${AyamData.tersedia
                 .map((item) => {
                   const isTelur = item.nama.toLowerCase().includes('telur')
                   const satuan = isTelur ? 'Butir' : 'Ekor'
-                  const step = isTelur ? 1 : 0.5
 
                   return `
-                  <div class="counter-row kecil">
-                    <span class="produk-nama">${item.nama}</span>
+                    <div class="produk-card">
+                      <div class="produk-info">
+                        <h4>${item.nama}</h4>
+                        <p class="harga">Rp ${item.harga.toLocaleString(
+                          'id-ID'
+                        )}</p>
+                        <span class="satuan">${satuan}</span>
+                      </div>
 
-                    <div class="counter-box">
-                      <button class="minus-btn" data-nama="${item.nama}">-</button>
+                      <div class="counter-box">
+                        <button class="minus-btn" data-nama="${item.nama}">
+                          −
+                        </button>
 
-                      <input
-                        class="jumlah-input"
-                        data-nama="${item.nama}"
-                        type="number"
-                        value="0"
-                        min="0"
-                        step="${step}"
-                      />
+                        <input
+                          class="jumlah-input"
+                          data-nama="${item.nama}"
+                          type="number"
+                          value="0"
+                          min="0"
+                        />
 
-                      <button class="plus-btn" data-nama="${item.nama}">+</button>
-                      <span class="satuan">${satuan}</span>
+                        <button class="plus-btn" data-nama="${item.nama}">
+                          +
+                        </button>
+
+                        <button
+                          class="cart-row-btn"
+                          data-nama="${item.nama}"
+                          title="Tambahkan ke keranjang"
+                        >
+                          <img 
+                            src="./src/assets/Photos/cart-empty.png" 
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;" 
+                          />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                `
+                  `
                 })
                 .join('')}
             </div>
           </div>
 
-          <!-- RINGKASAN -->
           <div class="ringkasan-row">
             <strong>Pesanan</strong>
 
@@ -122,13 +107,13 @@ const AyamPage = {
               Lanjut Pembayaran
             </button>
           </div>
-
         </section>
       </div>
     `
   },
 
   async afterRender() {
+    FloatingCart.afterRender()
     new AyamPagePresenter(AyamData).init()
   },
 }

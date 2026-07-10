@@ -5,61 +5,105 @@ class SayurPagePresenter {
   }
 
   init() {
+    this.tableBody = document.getElementById('ringkasanTable')
+    this.totalEl = document.getElementById('totalHarga')
+    this.checkoutBtn = document.getElementById('beliSekarang')
+
     this._initState()
     this._bindCounter()
+    this._bindCartButton()   // 🔥 WAJIB
+    this._render()
     this._bindCheckout()
-    this._renderRingkasan() // 🔥 WAJIB
   }
 
+  /* ================= INIT ================= */
   _initState() {
     this.data.tersedia.forEach((item) => {
       this.state[item.nama] = 0
     })
   }
 
+  /* ================= COUNTER ================= */
   _bindCounter() {
     document.querySelectorAll('.plus-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const nama = btn.dataset.nama
-        this.state[nama] += 1
-        this._updateInput(nama)
-      })
+      btn.onclick = () => this._updateJumlah(btn.dataset.nama, 1)
     })
 
     document.querySelectorAll('.minus-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const nama = btn.dataset.nama
-        if (this.state[nama] > 0) {
-          this.state[nama] -= 1
-          this._updateInput(nama)
-        }
-      })
+      btn.onclick = () => this._updateJumlah(btn.dataset.nama, -1)
     })
 
     document.querySelectorAll('.jumlah-input').forEach((input) => {
-      input.addEventListener('input', (e) => {
+      input.onblur = () => {
         const nama = input.dataset.nama
-        let value = parseInt(e.target.value) || 0
-        if (value < 0) value = 0
-
+        let value = Math.max(0, Math.floor(input.value || 0))
         this.state[nama] = value
-        this._renderRingkasan()
-      })
+        input.value = value
+        this._render()
+      }
     })
   }
 
-  _updateInput(nama) {
-    const input = document.querySelector(`.jumlah-input[data-nama="${nama}"]`)
-    input.value = this.state[nama]
-    this._renderRingkasan()
+  _updateJumlah(nama, delta) {
+    this.state[nama] = Math.max(0, this.state[nama] + delta)
+
+    document.querySelector(
+      `.jumlah-input[data-nama="${nama}"]`
+    ).value = this.state[nama]
+
+    this._render()
   }
 
+  /* ================= CART ================= */
+  _bindCartButton() {
+    document.querySelectorAll('.cart-row-btn').forEach((btn) => {
+      btn.onclick = () => {
+        const nama = btn.dataset.nama
+        const jumlah = this.state[nama]
+
+        if (jumlah <= 0) {
+          alert('Jumlah masih 0')
+          return
+        }
+
+        const produk = this.data.tersedia.find((p) => p.nama === nama)
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]')
+
+        const existing = cart.find((item) => item.nama === nama)
+
+        if (existing) {
+          existing.jumlah += jumlah
+        } else {
+          cart.push({
+            nama,
+            jumlah,
+            satuan: 'Ikat',
+            harga: produk.harga,
+            group: 'sayur',
+          })
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart))
+        window.dispatchEvent(new Event('storage'))
+
+        // reset counter
+        this.state[nama] = 0
+        document.querySelector(
+          `.jumlah-input[data-nama="${nama}"]`
+        ).value = 0
+
+        this._render()
+        alert(`${nama} masuk keranjang 🛒`)
+      }
+    })
+  }
+
+  /* ================= DATA ================= */
   _getPesanan() {
     return Object.entries(this.state)
       .filter(([_, jumlah]) => jumlah > 0)
       .map(([nama, jumlah]) => {
         const produk = this.data.tersedia.find((p) => p.nama === nama)
-
         return {
           nama,
           jumlah,
@@ -70,31 +114,27 @@ class SayurPagePresenter {
       })
   }
 
-  _renderRingkasan() {
-    const tbody = document.getElementById('ringkasanTable')
-    const totalEl = document.getElementById('totalHarga')
-
-    const pesanan = this._getPesanan()
-    tbody.innerHTML = ''
+  /* ================= RENDER ================= */
+  _render() {
+    this.tableBody.innerHTML = ''
     let total = 0
 
-    // ✅ ROW DEFAULT
+    const pesanan = this._getPesanan()
+
     if (pesanan.length === 0) {
-      tbody.innerHTML = `
+      this.tableBody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="4" style="text-align:center; opacity:0.6;">
-            Belum ada pesanan
-          </td>
+          <td colspan="4">Belum ada pesanan</td>
         </tr>
       `
-      totalEl.textContent = 'Rp 0'
+      this.totalEl.textContent = 'Rp 0'
+      this.checkoutBtn.disabled = true
       return
     }
 
-    // ✅ JIKA ADA PESANAN
     pesanan.forEach((item) => {
       total += item.subtotal
-      tbody.innerHTML += `
+      this.tableBody.innerHTML += `
         <tr>
           <td>${item.nama}</td>
           <td>${item.jumlah}</td>
@@ -104,30 +144,32 @@ class SayurPagePresenter {
       `
     })
 
-    totalEl.textContent = `Rp ${total.toLocaleString('id-ID')}`
+    this.totalEl.textContent = `Rp ${total.toLocaleString('id-ID')}`
+    this.checkoutBtn.disabled = false
   }
 
+  /* ================= CHECKOUT ================= */
   _bindCheckout() {
-    document.getElementById('beliSekarang').addEventListener('click', () => {
-      const pesanan = this._getPesanan()
+    this.checkoutBtn.onclick = () => {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]')
 
-      if (pesanan.length === 0) {
-        alert('Pilih produk terlebih dahulu')
+      if (cart.length === 0) {
+        alert('Keranjang masih kosong')
         return
       }
 
-      const total = pesanan.reduce((sum, item) => sum + item.subtotal, 0)
+      const total = cart.reduce(
+        (sum, item) => sum + item.harga * item.jumlah,
+        0
+      )
 
       localStorage.setItem(
         'checkoutData',
-        JSON.stringify({
-          produk: pesanan,
-          total,
-        }),
+        JSON.stringify({ produk: cart, total })
       )
 
       window.location.hash = '#/payment'
-    })
+    }
   }
 }
 

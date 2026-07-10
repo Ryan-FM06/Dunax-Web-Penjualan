@@ -10,8 +10,29 @@ const PaymentPage = {
 
           <div class="form-group">
             <input id="nama" placeholder="Nama Lengkap" />
-            <input id="alamat" placeholder="Alamat Lokasi" />
             <input id="telepon" placeholder="Nomor Telepon" />
+
+            <div class="form-row">
+              <select id="provinsi">
+                <option value="">Pilih Provinsi</option>
+              </select>
+              <select id="kota" disabled>
+                <option value="">Pilih Kota/Kabupaten</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <select id="kecamatan" disabled>
+                <option value="">Pilih Kecamatan</option>
+              </select>
+              <select id="kelurahan" disabled>
+                <option value="">Pilih Kelurahan/Desa</option>
+              </select>
+            </div>
+
+            <textarea id="alamatDetail" placeholder="Alamat Lengkap (Nama Jalan, No. Rumah, RT/RW)" rows="2"></textarea>
+
+            <textarea id="catatan" placeholder="Catatan/Patokan (opsional)" rows="2"></textarea>
           </div>
 
           <h3 class="section-title">Pilih Metode Pembayaran</h3>
@@ -40,7 +61,7 @@ const PaymentPage = {
 
           <div class="total-row">
             <span>Total Bayar</span>
-            <strong id="paymentTotal">Rp 97.000</strong>
+            <strong id="paymentTotal">Rp0</strong>
           </div>
 
           <button id="bayarSekarang" class="btn-dunax">

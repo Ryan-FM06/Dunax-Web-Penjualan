@@ -1,47 +1,56 @@
-const RegisterPresenter = {
-  init() {
-    const form = document.querySelector('#registerForm')
-    if (!form) return
+import Notification from '../components/Notifications.js';
 
-    if (form.dataset.bound === 'true') return
-    form.dataset.bound = 'true'
+export const handleRegister = async (name, email, password) => {
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
+    try {
 
-      const name = document.querySelector('#name').value.trim()
-      const email = document.querySelector('#email').value.trim()
-      const password = document.querySelector('#password').value.trim()
+        const response = await fetch(
+            'http://localhost:4000/register',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                })
+            }
+        );
 
-      if (!name || !email || !password) {
-        alert('Semua field wajib diisi')
-        return
-      }
+        const result = await response.json();
 
-      try {
-        const response = await fetch('http://localhost:3000/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name, email, password }),
-        })
+        if (response.ok) {
 
-        const result = await response.json()
+            Notification.show(
+                'Registrasi berhasil! Cek email untuk kode OTP.',
+                'success'
+            );
 
-        if (!response.ok) {
-          alert(result.message)
-          return
+            setTimeout(() => {
+
+                window.location.hash =
+                    `#/verify-email?email=${encodeURIComponent(email)}`;
+
+            },1500);
+
+            return;
         }
 
-        alert('Register berhasil, silakan login')
-        window.location.hash = '#/login'
-      } catch (error) {
-        console.error(error)
-        alert('Register gagal')
-      }
-    })
-  },
-}
+        Notification.show(
+            result.message || 'Registrasi gagal.',
+            'error'
+        );
 
-export default RegisterPresenter
+    }
+    catch(err){
+
+        Notification.show(
+            'Koneksi ke backend gagal!',
+            'error'
+        );
+
+    }
+
+};

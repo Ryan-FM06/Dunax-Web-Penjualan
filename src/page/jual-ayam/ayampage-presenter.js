@@ -10,6 +10,7 @@ class AyamPagePresenter {
     this.tableBody = document.getElementById('ringkasanTable')
 
     this._initCounter()
+    this._initCartButton()
     this._render()
     this._checkout()
   }
@@ -19,22 +20,20 @@ class AyamPagePresenter {
     return nama.toLowerCase().includes('telur')
   }
 
-  _step(nama) {
-    return this._isTelur(nama) ? 1 : 0.5
+  _step() {
+    return 1
   }
 
   _satuan(nama) {
     return this._isTelur(nama) ? 'Butir' : 'Ekor'
   }
 
-  _normalize(nama, value) {
-    const step = this._step(nama)
-    if (this._isTelur(nama)) return Math.floor(value)
-    return Math.round(value / step) * step
+  _normalize(value) {
+    return Math.floor(value)
   }
 
-  _formatJumlah(nama, value) {
-    return this._isTelur(nama) ? value : value.toFixed(1)
+  _formatJumlah(value) {
+    return value
   }
 
   /* ================= COUNTER ================= */
@@ -51,8 +50,8 @@ class AyamPagePresenter {
       input.onblur = () => {
         const nama = input.dataset.nama
         let value = Math.max(0, Number(input.value))
-        value = this._normalize(nama, value)
-        input.value = this._formatJumlah(nama, value)
+        value = this._normalize(value)
+        input.value = this._formatJumlah(value)
         this._simpan(nama, value)
       }
     })
@@ -60,13 +59,9 @@ class AyamPagePresenter {
 
   _updateJumlah(nama, arah) {
     const input = document.querySelector(`.jumlah-input[data-nama="${nama}"]`)
-
-    const step = this._step(nama)
-    let value = Number(input.value) + arah * step
-
-    value = Math.max(0, this._normalize(nama, value))
-    input.value = this._formatJumlah(nama, value)
-
+    let value = Number(input.value) + arah
+    value = Math.max(0, this._normalize(value))
+    input.value = value
     this._simpan(nama, value)
   }
 
@@ -110,18 +105,58 @@ class AyamPagePresenter {
 
       this.tableBody.innerHTML += `
         <tr>
-          <td data-label="Item">${nama}</td>
-          <td data-label="Jumlah">${this._formatJumlah(nama, p.jumlah)}</td>
-          <td data-label="Satuan">${p.satuan}</td>
-          <td data-label="Harga">
-            Rp ${subtotal.toLocaleString('id-ID')}
-          </td>
+          <td>${nama}</td>
+          <td>${p.jumlah}</td>
+          <td>${p.satuan}</td>
+          <td>Rp ${subtotal.toLocaleString('id-ID')}</td>
         </tr>
       `
     })
 
     this.totalHargaEl.textContent = `Rp ${total.toLocaleString('id-ID')}`
     this.checkoutBtn.disabled = false
+  }
+
+  /* ================= CART ================= */
+  _initCartButton() {
+    document.querySelectorAll('.cart-row-btn').forEach((btn) => {
+      btn.onclick = () => {
+        const nama = btn.dataset.nama
+        const input = document.querySelector(
+          `.jumlah-input[data-nama="${nama}"]`
+        )
+
+        const jumlah = Number(input.value)
+        if (jumlah <= 0) {
+          alert('Jumlah masih 0')
+          return
+        }
+
+        const produk = this.data.tersedia.find((p) => p.nama === nama)
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]')
+        const existing = cart.find((i) => i.nama === nama)
+
+        if (existing) {
+          existing.jumlah += jumlah
+        } else {
+          cart.push({
+            nama,
+            jumlah,
+            harga: produk.harga,
+            satuan: this._satuan(nama),
+          })
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart))
+        window.dispatchEvent(new Event('storage'))
+
+        input.value = 0
+        delete this.pesanan[nama]
+        this._render()
+
+        alert(`${nama} masuk keranjang 🛒`)
+      }
+    })
   }
 
   /* ================= CHECKOUT ================= */
@@ -134,7 +169,6 @@ class AyamPagePresenter {
 
       const total = Number(this.totalHargaEl.textContent.replace(/[^\d]/g, ''))
 
-      // 🔥 FIX DI SINI: OBJECT → ARRAY
       const produkArray = Object.entries(this.pesanan).map(([nama, p]) => ({
         nama,
         jumlah: p.jumlah,
@@ -145,9 +179,9 @@ class AyamPagePresenter {
       localStorage.setItem(
         'checkoutData',
         JSON.stringify({
-          produk: produkArray, // ✅ SEKARANG ARRAY
+          produk: produkArray,
           total,
-        }),
+        })
       )
 
       window.location.hash = '#/payment'
