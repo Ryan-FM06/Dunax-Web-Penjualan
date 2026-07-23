@@ -1,11 +1,12 @@
 import Notification from '../components/Notifications.js';
+import { AUTH_URL } from '../config/api.js';
 
 export const verifyEmail = async (email, otp) => {
 
     try{
 
         const response = await fetch(
-            'http://localhost:4000/verify-email',
+            `${AUTH_URL}/verify-email`,
             {
                 method:'POST',
                 headers:{

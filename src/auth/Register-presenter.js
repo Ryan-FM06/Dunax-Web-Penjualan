@@ -1,11 +1,12 @@
 import Notification from '../components/Notifications.js';
+import { AUTH_URL } from '../config/api.js';
 
 export const handleRegister = async (name, email, password) => {
 
     try {
 
         const response = await fetch(
-            'http://localhost:4000/register',
+            `${AUTH_URL}/register`,
             {
                 method: 'POST',
                 headers: {

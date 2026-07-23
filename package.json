@@ -2,7 +2,7 @@
   "name": "dunax-farm",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx serve -s . -l $PORT"
+    "start": "node node_modules/serve/build/main.js -s . -l $PORT"
   },
   "keywords": [],
   "author": "",
