@@ -39,7 +39,7 @@ if (password.length < 8) {
   try {
     // cek email sudah ada atau belum
     const [exist] = await pool.query(
-      'SELECT id FROM Users WHERE email = ?',
+      'SELECT id FROM users WHERE email = ?',
       [email]
     );
 
@@ -55,7 +55,7 @@ if (password.length < 8) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await pool.query(
-      `INSERT INTO Users
+      `INSERT INTO users
       (full_name,email,password,otp_code,otp_expiry,is_verified)
       VALUES (?,?,?,?,?,false)`,
       [name, email, hashedPassword, otp, expiry]
@@ -92,7 +92,7 @@ app.post('/verify-email', async (req, res) => {
   const { email, otp } = req.body;
   try {
     const [rows] = await pool.query(
-      'SELECT id, otp_code, otp_expiry FROM Users WHERE email = ?',
+      'SELECT id, otp_code, otp_expiry FROM users WHERE email = ?',
       [email]
     );
 
@@ -111,11 +111,11 @@ app.post('/verify-email', async (req, res) => {
     }
 
     await pool.query(
-      'UPDATE Users SET is_verified = true, otp_code = NULL, otp_expiry = NULL WHERE email = ?',
+      'UPDATE users SET is_verified = true, otp_code = NULL, otp_expiry = NULL WHERE email = ?',
       [email]
     );
 
-    const [userRows] = await pool.query('SELECT id, full_name, email FROM Users WHERE email = ?', [email]);
+    const [userRows] = await pool.query('SELECT id, full_name, email FROM users WHERE email = ?', [email]);
 
     res.json({
       status: 'success',
@@ -133,7 +133,7 @@ app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const [rows] = await pool.query(
-      'SELECT id, full_name, email, password, is_verified FROM Users WHERE email = ?',
+      'SELECT id, full_name, email, password, is_verified FROM users WHERE email = ?',
       [email]
     );
 
@@ -174,7 +174,7 @@ app.post('/forgot-password', async (req, res) => {
     const expiry = new Date(Date.now() + 15 * 60 * 1000);
 
     const [result] = await pool.query(
-      'UPDATE Users SET otp_code = ?, otp_expiry = ? WHERE email = ?',
+      'UPDATE users SET otp_code = ?, otp_expiry = ? WHERE email = ?',
       [otp, expiry, email]
     );
 
@@ -182,7 +182,7 @@ app.post('/forgot-password', async (req, res) => {
       return res.status(404).json({ message: 'Email pembeli tidak ditemukan!' });
     }
 
-    const [userRows] = await pool.query('SELECT full_name FROM Users WHERE email = ?', [email]);
+    const [userRows] = await pool.query('SELECT full_name FROM users WHERE email = ?', [email]);
 
     await transporter.sendMail({
       from: `"Dunax Farm Admin" <${process.env.EMAIL_USER}>`,
@@ -210,7 +210,7 @@ app.post('/resend-otp', async (req, res) => {
       new Date(Date.now() + 10 * 60 * 1000);
 
     const [rows] = await pool.query(
-      'SELECT full_name FROM Users WHERE email=?',
+      'SELECT full_name FROM users WHERE email=?',
       [email]
     );
 
@@ -221,7 +221,7 @@ app.post('/resend-otp', async (req, res) => {
     }
 
     await pool.query(
-      `UPDATE Users
+      `UPDATE users
        SET otp_code=?,
            otp_expiry=?
        WHERE email=?`,
@@ -257,7 +257,7 @@ app.get('/users', async (req, res) => {
         email,
         is_verified,
         created_at
-      FROM Users
+      FROM users
     `);
 
     res.json({
@@ -385,7 +385,7 @@ app.post('/reset-password', async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      'SELECT id, otp_code, otp_expiry FROM Users WHERE email = ?',
+      'SELECT id, otp_code, otp_expiry FROM users WHERE email = ?',
       [email]
     );
 
@@ -406,7 +406,7 @@ app.post('/reset-password', async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await pool.query(
-      'UPDATE Users SET password = ?, otp_code = NULL, otp_expiry = NULL WHERE email = ?',
+      'UPDATE users SET password = ?, otp_code = NULL, otp_expiry = NULL WHERE email = ?',
       [hashedPassword, email]
     );
 
