@@ -2,15 +2,14 @@
   "name": "dunax-farm",
   "version": "1.0.0",
   "scripts": {
-    "start": "serve  ."
+    "start": "serve -s . -l $PORT"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "prettier": "^3.8.0",
-    "serve": "^14.2.5"
+    "prettier": "^3.8.0"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -22,7 +21,8 @@
     "jsonwebtoken": "^9.0.3",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",
-    "pg": "^8.18.0"
+    "pg": "^8.18.0",
+    "serve": "^14.2.5"
   },
   "description": "",
   "main": "index.js"
