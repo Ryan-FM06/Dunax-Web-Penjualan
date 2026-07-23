@@ -1,11 +1,11 @@
-import { BASE_URL } from '../../config/api.js'
+import { AUTH_URL } from '../../config/api.js'
 
 const DaftarAntrianPresenter = {
   async init({ container, config }) {
     let pesanan = []
 
     try {
-      const res = await fetch(`${BASE_URL}/orders/antrian`)
+      const res = await fetch(`${AUTH_URL}/orders/antrian`)
       const result = await res.json()
       if (result.status === 'success') {
         pesanan = result.data

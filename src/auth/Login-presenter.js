@@ -1,5 +1,5 @@
 import Notification from '../components/Notifications.js';
-import { BASE_URL } from '../config/api.js';
+import { AUTH_URL } from '../config/api.js';
 import { saveAuth } from '../utils/authStorage.js';
 
 export const handleLogin = async (email, password, rememberMe) => {
@@ -7,7 +7,7 @@ export const handleLogin = async (email, password, rememberMe) => {
     try{
 
         const response = await fetch(
-            `${BASE_URL}/login`,
+            `${AUTH_URL}/login`,
             {
                 method:'POST',
                 headers:{

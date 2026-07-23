@@ -1,5 +1,17 @@
+import { getAuth } from '../../utils/authStorage.js'
+
 const KeranjangPresenter = {
   init() {
+    const { isLogin, currentUser } = getAuth()
+
+    if (!isLogin || !currentUser) {
+      alert('Silakan login dulu')
+      window.location.hash = '#/login'
+      return
+    }
+
+    this.cartKey = `cart_${currentUser.id}`
+
     this.cartListEl = document.getElementById('cart-list')
     this.totalEl = document.getElementById('cart-total')
     this.checkoutBtn = document.getElementById('checkout-btn')
@@ -10,7 +22,7 @@ const KeranjangPresenter = {
   },
 
   load() {
-    this.cart = JSON.parse(localStorage.getItem('cart')) || []
+    this.cart = JSON.parse(localStorage.getItem(this.cartKey)) || []
 
     this.cart = this.cart.map(item => ({
       ...item,
@@ -21,7 +33,7 @@ const KeranjangPresenter = {
   },
 
   saveCart() {
-    localStorage.setItem('cart', JSON.stringify(this.cart))
+    localStorage.setItem(this.cartKey, JSON.stringify(this.cart))
     window.dispatchEvent(new Event('storage'))
   },
 
@@ -108,7 +120,6 @@ const KeranjangPresenter = {
     })
   },
 
-  // 🔥 CHECKOUT KE PAYMENT
   checkout() {
     const produkDipilih = this.cart.filter(item => item.checked)
 

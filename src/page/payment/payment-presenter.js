@@ -1,11 +1,12 @@
-import { BASE_URL } from '../../config/api.js'
+import { AUTH_URL } from '../../config/api.js'
+import { getAuth } from '../../utils/authStorage.js'
 
 const WILAYAH_BASE = 'https://www.emsifa.com/api-wilayah-indonesia/api'
 
 class PaymentPresenter {
   init() {
     const data = JSON.parse(localStorage.getItem('checkoutData'))
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+    const { isLogin, currentUser } = getAuth()
 
     if (!data || !data.produk) {
       alert('Data pesanan kosong')
@@ -13,7 +14,7 @@ class PaymentPresenter {
       return
     }
 
-    if (!currentUser) {
+    if (!isLogin || !currentUser) {
       alert('Silakan login dulu')
       window.location.hash = '#/login'
       return
@@ -94,7 +95,7 @@ class PaymentPresenter {
       bayarBtn.textContent = 'Memproses...'
 
       try {
-        const res = await fetch(`${BASE_URL}/orders`, {
+        const res = await fetch(`${AUTH_URL}/orders`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

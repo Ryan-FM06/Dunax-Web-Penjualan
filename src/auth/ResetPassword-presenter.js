@@ -1,9 +1,9 @@
 import Notification from '../components/Notifications.js';
-import { BASE_URL } from '../config/api.js';
+import { AUTH_URL } from '../config/api.js';
 
 export const handleResetPassword = async (email, otp, newPassword) => {
     try {
-        const response = await fetch(`${BASE_URL}/reset-password`, {
+        const response = await fetch(`${AUTH_URL}/reset-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, otp, newPassword })

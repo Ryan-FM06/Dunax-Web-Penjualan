@@ -1,3 +1,5 @@
+import { getAuth } from '../utils/authStorage.js'
+
 const FloatingCart = {
   render() {
     return `
@@ -19,10 +21,17 @@ const FloatingCart = {
     const cartCountEl = document.getElementById('cart-count');
 
     const renderCount = () => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const { isLogin, currentUser } = getAuth();
+
+      if (!isLogin || !currentUser) {
+        cartCountEl.style.display = 'none';
+        return;
+      }
+
+      const cartKey = `cart_${currentUser.id}`;
+      const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
       const totalQty = cart.reduce((sum, item) => sum + (item.jumlah || 0), 0);
-      
-      // Update angka dan sembunyikan jika 0 (opsional)
+
       cartCountEl.innerText = totalQty;
       cartCountEl.style.display = totalQty > 0 ? 'flex' : 'none';
     };
@@ -31,13 +40,9 @@ const FloatingCart = {
       window.location.hash = '#/keranjang';
     };
 
-    // 1. Dengerin perubahan dari tab lain
     window.addEventListener('storage', renderCount);
-
-    // 2. Dengerin perubahan dari halaman yang sama (saat klik beli)
     window.addEventListener('cartUpdated', renderCount);
 
-    // Render pertama kali saat load
     renderCount();
   },
 };

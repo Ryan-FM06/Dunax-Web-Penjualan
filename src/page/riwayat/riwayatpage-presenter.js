@@ -1,13 +1,14 @@
-import { BASE_URL } from '../../config/api.js'
+import { AUTH_URL } from '../../config/api.js'
+import { getAuth } from '../../utils/authStorage.js'
 
 class RiwayatPagePresenter {
   async init() {
     const table = document.getElementById('riwayatTable')
     const totalEl = document.getElementById('grandTotal')
 
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+    const { isLogin, currentUser } = getAuth()
 
-    if (!currentUser) {
+    if (!isLogin || !currentUser) {
       table.innerHTML = `<tr><td colspan="7">Silakan login untuk melihat riwayat.</td></tr>`
       totalEl.textContent = 'Rp 0'
       return
@@ -18,7 +19,7 @@ class RiwayatPagePresenter {
     let pesanan = []
 
     try {
-      const res = await fetch(`${BASE_URL}/orders?user_id=${currentUser.id}`)
+      const res = await fetch(`${AUTH_URL}/orders?user_id=${currentUser.id}`)
       const result = await res.json()
 
       if (result.status === 'success') {

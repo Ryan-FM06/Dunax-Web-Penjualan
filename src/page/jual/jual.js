@@ -1,20 +1,28 @@
-import AyamPagePresenter from './ayampage-presenter.js'
-import AyamData from '../../data/Produk-ayam.js'
+import JualPresenter, { getSatuan } from './jual-presenter.js'
 import FloatingCart from '../../components/FloatingChart.js'
 
-const AyamPage = {
+const JualPage = {
   async render() {
     return `
       ${FloatingCart.render()}
+      <div id="jualRoot">
+        <p>Memuat produk...</p>
+      </div>
+    `
+  },
 
+  renderCategory(category) {
+    const root = document.getElementById('jualRoot')
+
+    root.innerHTML = `
       <div class="page-wrapper">
         <section class="detail-container">
 
           <div class="product-banner">
-            <img src="src/assets/Photos/yam.jpg" class="banner-img" />
+            <img src="${category.foto}" class="banner-img" />
             <div class="banner-text">
-              <h2>${AyamData.nama}</h2>
-              <p>Tersedia ${AyamData.stok}</p>
+              <h2>${category.nama}</h2>
+              <p>${category.keterangan}</p>
             </div>
           </div>
 
@@ -22,42 +30,45 @@ const AyamPage = {
             <h3>Daftar Harga</h3>
 
             <div class="produk-grid">
-              ${AyamData.tersedia
+              ${category.details
+                .filter((item) => item.aktif)
                 .map((item) => {
-                  const isTelur = item.nama.toLowerCase().includes('telur')
-                  const satuan = isTelur ? 'Butir' : 'Ekor'
+                  const satuan = getSatuan(category.id, item.nama)
+                  const habis = item.stok === 0
 
                   return `
                     <div class="produk-card">
                       <div class="produk-info">
                         <h4>${item.nama}</h4>
-                        <p class="harga">Rp ${item.harga.toLocaleString(
-                          'id-ID'
-                        )}</p>
+                        <p class="harga">Rp ${item.harga.toLocaleString('id-ID')}</p>
                         <span class="satuan">${satuan}</span>
+                        ${habis ? '<span class="stok-habis">Stok Habis</span>' : `<span class="stok">Stok: ${item.stok}</span>`}
                       </div>
 
                       <div class="counter-box">
-                        <button class="minus-btn" data-nama="${item.nama}">
+                        <button class="minus-btn" data-id="${item.id}" ${habis ? 'disabled' : ''}>
                           −
                         </button>
 
                         <input
                           class="jumlah-input"
-                          data-nama="${item.nama}"
+                          data-id="${item.id}"
                           type="number"
                           value="0"
                           min="0"
+                          max="${item.stok}"
+                          ${habis ? 'disabled' : ''}
                         />
 
-                        <button class="plus-btn" data-nama="${item.nama}">
+                        <button class="plus-btn" data-id="${item.id}" ${habis ? 'disabled' : ''}>
                           +
                         </button>
 
                         <button
                           class="cart-row-btn"
-                          data-nama="${item.nama}"
+                          data-id="${item.id}"
                           title="Tambahkan ke keranjang"
+                          ${habis ? 'disabled' : ''}
                         >
                           <img 
                             src="./src/assets/Photos/cart-empty.png" 
@@ -112,10 +123,19 @@ const AyamPage = {
     `
   },
 
-  async afterRender() {
+  renderNotFound() {
+    document.getElementById('jualRoot').innerHTML = '<h2>Kategori tidak ditemukan</h2>'
+  },
+
+  renderError() {
+    document.getElementById('jualRoot').innerHTML = '<h2>Gagal memuat data, coba lagi</h2>'
+  },
+
+  async afterRender(params) {
     FloatingCart.afterRender()
-    new AyamPagePresenter(AyamData).init()
+    const presenter = new JualPresenter({ view: this, categoryId: params?.category })
+    presenter.init()
   },
 }
 
-export default AyamPage
+export default JualPage

@@ -1,5 +1,6 @@
 import FloatingCart from '../../components/FloatingChart.js'
 import MapComponent from '../../components/map.js'
+import HomePagePresenter from './homepage-presenter.js'
 
 const HomePage = {
   render() {
@@ -7,172 +8,72 @@ const HomePage = {
       ${FloatingCart.render()}
 
       <!-- HERO -->
-      <section class="hero">
+      <section class="hero" id="heroSection">
         <div class="hero-slide active">
-          <img src="./src/assets/Photos/ayammm.webp" class="hero-image" />
-          <div class="hero-content">
-            <h1>Ayam</h1>
-            <p>Langsung dari peternak</p>
-            <a href="#/jual-ayam" class="btn-primary">Beli Ayam</a>
-          </div>
+          <div class="hero-content"><p>Memuat...</p></div>
         </div>
-
-        <div class="hero-slide">
-          <img src="./src/assets/Photos/MBINGS.jpg" class="hero-image" />
-          <div class="hero-content">
-            <h1>Kambing</h1>
-            <p>Langsung dari peternak</p>
-            <a href="#/jual-kambing" class="btn-primary">Beli Kambing</a>
-          </div>
-        </div>
-
-        <div class="hero-slide">
-          <img src="./src/assets/Photos/PI.jpg" class="hero-image" />
-          <div class="hero-content">
-            <h1>Sapi</h1>
-            <p>Langsung dari peternak</p>
-            <a href="#/jual-sapi" class="btn-primary">Beli Sapi</a>
-          </div>
-        </div>
-
-        <div class="hero-slide">
-          <img src="./src/assets/Photos/KAN.jpg" class="hero-image" />
-          <div class="hero-content">
-            <h1>Ikan</h1>
-            <p>Langsung dari peternak</p>
-            <a href="#/jual-ikan" class="btn-primary">Beli Ikan</a>
-          </div>
-        </div>
-
-        <div class="hero-slide">
-          <img src="./src/assets/Photos/YUR.jpg" class="hero-image" />
-          <div class="hero-content">
-            <h1>Sayur</h1>
-            <p>Langsung dari peternak</p>
-            <a href="#/jual-sayur" class="btn-primary">Beli Sayur</a>
-          </div>
-        </div>
-
-        <button class="hero-btn prev">‹</button>
-        <button class="hero-btn next">›</button>
       </section>
 
       <!-- MAIN LAYOUT -->
       <section class="home-layout">
 
-        <!-- LEFT CONTENT -->
         <div class="main-content">
 
-          <!-- WELCOME SECTION -->
           <section class="welcome-section">
             <div class="welcome-card">
               <h2>Selamat Datang di Website DUNAX FARM (DNX).</h2>
-
               <p>
                 Dunax Farm menghadirkan platform pemesanan berbasis web yang dirancang untuk mempermudah
                 pelanggan dalam memperoleh produk peternakan secara cepat, praktis, dan terpercaya.
                 Sistem ini difokuskan pada kemudahan akses, kecepatan proses, serta kenyamanan pengguna.
               </p>
-
               <p>Melalui portal ini, Anda dapat melakukan beberapa layanan utama berikut:</p>
-
               <ul class="welcome-list">
                 <li class="item telur"> Pemesanan Telur Fertil Kuntara 4 berkualitas unggul</li>
                 <li class="item doc"> Pemesanan DOC (Day Old Chick) Kuntara 4</li>
                 <li class="item pantau"> Pantauan ketersediaan produk real-time</li>
                 <li class="item info"> Akses informasi pemesanan & antrian</li>
               </ul>
-
               <p class="welcome-footer">
                 Platform ini akan terus dikembangkan secara bertahap untuk mendukung kebutuhan peternakan modern
                 serta meningkatkan kualitas layanan bagi seluruh mitra dan pelanggan.
               </p>
-
               <div class="welcome-action">
                 <a href="#/antrian" class="btn-primary">Lihat Daftar Antrian</a>
               </div>
             </div>
           </section>
 
-          <!-- PRODUCT AREA -->
           <div class="content-card">
             <section class="search-section">
               <input type="text" id="searchInput" placeholder="Cari produk ternak..." />
             </section>
 
-            <section class="product-grid">
-
-              <div class="product-card">
-                <img src="./src/assets/Photos/Kuntara.jpg" />
-                <h3>Ayam Kuntara 4</h3>
-                <p>Menjual Telur Fertil, DOC, Pullet, Ayam Pedaging Konsumsi, Telur Konsumsi, dan Telur Ayam Kampung.</p>
-                <a href="#/jual-ayam" class="btn-buy">Beli Sekarang</a>
-              </div>
-
-              <div class="product-card">
-                <img src="./src/assets/Photos/BEBEK.jpg" />
-                <h3>Bebek Konsumsi</h3>
-                <p>Menjual Bebek untuk Konsumsi dan Pembibtan dengan Kualitas Unggul dan Terbaik.</p>
-                <a href="#/jual-bebek" class="btn-buy">Beli Sekarang</a>
-              </div>
-
-              <div class="product-card">
-                <img src="./src/assets/Photos/kambing.jpg" />
-                <h3>Kambing Jawarandu</h3>
-                <p>Menjual Kambing Jawarandu untuk Pembibitan dan Keperluan Konsumsi (Sate, Aqiqah, dan Kurban).</p>
-                <a href="#/jual-kambing" class="btn-buy">Beli Sekarang</a>
-              </div>
-
-              <div class="product-card">
-                <img src="./src/assets/Photos/sapi.webp" />
-                <h3>Sapi</h3>
-                <p>Menjual Sapi untuk Pembibitan, Keperluan Kurban, dan Konsumsi dengan kualitas unggulan.</p>
-                <a href="#/jual-sapi" class="btn-buy">Beli Sekarang</a>
-              </div>
-
-              <div class="product-card">
-                <img src="./src/assets/Photos/gurame.webp" />
-                <h3>Ikan</h3>
-                <p>Menjual aneka Ikan ternak konsumsi jenis lele dan gurame.</p>
-                <a href="#/jual-ikan" class="btn-buy">Beli Sekarang</a>
-              </div>
-
-              <div class="product-card">
-                <img src="./src/assets/Photos/sayur.jpg" />
-                <h3>Sayuran</h3>
-                <p>Menjual Aneka Macam Sayur dengan kualitas terbaik.</p>
-                <a href="#/jual-sayur" class="btn-buy">Beli Sekarang</a>
-              </div>
-
+            <section class="product-grid" id="productGrid">
+              <p>Memuat produk...</p>
             </section>
           </div>
         </div>
 
-        <!-- SIDEBAR -->
         <aside class="sidebar">
           <div class="sidebar-card">
             <h3>DUNAX FARM</h3>
-
             <p class="sidebar-tagline-card">
               Integrasi peternakan secara alami dan non kimia
             </p>
-
             <img 
               src="./src/assets/icon/Logooooo.png" 
               alt="Logo Dunax Farm" 
               class="sidebar-logo" 
             />
-
             <p class="sidebar-desc">
               Menjual aneka macam hasil ternak dan kebun dengan kualitas terbaik dan murah meriah.
             </p>
-
             <table class="info-table">
               <tr><th>Email</th><td>-</td></tr>
               <tr><th>Kontak</th><td>-</td></tr>
               <tr><th>Lokasi</th><td>Wonogiri, Jawa Tengah</td></tr>
             </table>
-
             ${MapComponent.render()}
           </div>
         </aside>
@@ -181,12 +82,53 @@ const HomePage = {
     `
   },
 
-  afterRender() {
-    FloatingCart.afterRender()
+  renderHero(commodities) {
+    const heroSection = document.getElementById('heroSection')
 
+    heroSection.innerHTML =
+      commodities
+        .map(
+          (item, index) => `
+        <div class="hero-slide ${index === 0 ? 'active' : ''}">
+          <img src="${item.foto}" class="hero-image" />
+          <div class="hero-content">
+            <h1>${item.nama}</h1>
+            <p>Langsung dari peternak</p>
+            <a href="#/jual/${item.id}" class="btn-primary">Beli ${item.nama}</a>
+          </div>
+        </div>
+      `
+        )
+        .join('') +
+      `<button class="hero-btn prev">‹</button><button class="hero-btn next">›</button>`
+
+    this.setupHeroSlider()
+  },
+
+  renderProducts(commodities) {
+    const grid = document.getElementById('productGrid')
+
+    grid.innerHTML = commodities
+      .map(
+        (item) => `
+      <div class="product-card">
+        <img src="${item.foto}" />
+        <h3>${item.nama}</h3>
+        <p>${item.keterangan}</p>
+        <a href="#/jual/${item.id}" class="btn-buy">Beli Sekarang</a>
+      </div>
+    `
+      )
+      .join('')
+
+    this.setupSearch()
+  },
+
+  setupHeroSlider() {
     const slides = document.querySelectorAll('.hero-slide')
     const nextBtn = document.querySelector('.hero-btn.next')
     const prevBtn = document.querySelector('.hero-btn.prev')
+    if (!slides.length || !nextBtn) return
 
     let current = 0
     let timer
@@ -223,7 +165,9 @@ const HomePage = {
     }
 
     startAuto()
+  },
 
+  setupSearch() {
     const searchInput = document.querySelector('#searchInput')
     const cards = document.querySelectorAll('.product-card')
 
@@ -234,7 +178,14 @@ const HomePage = {
         card.style.display = title.includes(keyword) ? 'block' : 'none'
       })
     })
+  },
+
+  afterRender() {
+    FloatingCart.afterRender()
     MapComponent.afterRender()
+
+    const presenter = new HomePagePresenter({ view: this })
+    presenter.init()
   },
 }
 

@@ -1,10 +1,5 @@
 import HomePage from '../page/homepage/homepage.js'
-import AyamPage from '../page/jual-ayam/ayampage.js'
-import BebekPage from '../page/jual-bebek/bebekpage.js'
-import IkanPage from '../page/jual-ikan/ikanpage.js'
-import KambingPage from '../page/jual-kambing/kambingpage.js'
-import SapiPage from '../page/jual-sapi/sapipage.js'
-import SayurPage from '../page/jual-sayur/sayurpage.js'
+import JualPage from '../page/jual/jual.js'
 import PaymentPage from '../page/payment/payment.js'
 import RiwayatPage from '../page/riwayat/riwayatpage.js'
 import AntrianPage from '../page/antrian/daftar-antrian.js'
@@ -23,16 +18,11 @@ const routes = {
   '/verify-email': { page: VerifyEmail, public: true },
   '/forgot-password': { page: ForgotPassword, public: true },
   '/reset-password': { page: ResetPassword, public: true },
-  '/jual-ayam': { page: AyamPage },
-  '/jual-bebek' : {page : BebekPage},
-  '/jual-ikan': { page: IkanPage },
-  '/jual-kambing': { page: KambingPage },
-  '/jual-sapi': { page: SapiPage },
-  '/jual-sayur': { page: SayurPage },
+  '/jual/:category': { page: JualPage },
   '/payment': { page: PaymentPage },
   '/riwayat': { page: RiwayatPage },
   '/antrian': { page: AntrianPage },
-  '/keranjang' : { page: KeranjangPage},
+  '/keranjang': { page: KeranjangPage },
 }
 
 export default routes

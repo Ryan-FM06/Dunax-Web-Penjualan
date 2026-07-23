@@ -1,3 +1,6 @@
+import { BASE_URL } from '../config/api.js'
+import { getAuth, clearAuth } from '../utils/authStorage.js'
+
 const AppBar = {
   render({ simple = false } = {}) {
     if (simple) {
@@ -10,19 +13,7 @@ const AppBar = {
       `
     }
 
-    const isLogin = localStorage.getItem('isLogin') === 'true'
-
-    let currentUser = null
-
-    const userStorage = localStorage.getItem('currentUser')
-
-    if (userStorage) {
-      try {
-        currentUser = JSON.parse(userStorage)
-      } catch {
-        localStorage.removeItem('currentUser')
-      }
-    }
+    const { isLogin, currentUser } = getAuth()
 
     const getInitials = (name = '') =>
       name
@@ -37,10 +28,6 @@ const AppBar = {
       isLogin && currentUser?.full_name
         ? getInitials(currentUser.full_name)
         : 'U'
-
-    const avatarUrl = isLogin && currentUser?.email
-      ? `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(currentUser.email)}`
-      : 'https://api.dicebear.com/9.x/adventurer/svg?seed=user';
 
     return `
       <nav class="navbar">
@@ -59,19 +46,10 @@ const AppBar = {
               </span>
 
               <div class="dropdown-panel" id="productDropdownPanel">
-
-                <div class="dropdown-group">
+                <div class="dropdown-group" id="productDropdownGroup">
                   <div class="dropdown-label">Buat Pesanan Baru</div>
-
-                  <a href="#/jual-ayam">Tambah Pesanan Ayam Kuntara 4</a>
-                  <a href="#/jual-bebek">Tambah Pesanan Bebek</a>
-                  <a href="#/jual-kambing">Tambah pesanan Kambing Jawarandu</a>
-                  <a href="#/jual-sapi">Tambah pesanan Sapi</a>
-                  <a href="#/jual-ikan">Tambah pesanan Ikan</a>
-                  <a href="#/jual-sayur">Tambah pesanan Sayuran</a>
-
+                  <span class="dropdown-loading">Memuat...</span>
                 </div>
-
               </div>
 
             </li>
@@ -178,22 +156,10 @@ const AppBar = {
                   class="mobile-dropdown-panel"
                   id="mobileProductPanel"
                 >
-
-                  <div class="dropdown-group">
-
-                    <div class="dropdown-label">
-                      Buat Pesanan Baru
-                    </div>
-
-                    <a href="#/jual-ayam">Tambah Pesanan Ayam Kuntara 4</a>
-                    <a href="#/jual-bebek">Tambah Pesanan Bebek</a>
-                    <a href="#/jual-kambing">Tambah pesanan Kambing Jawarandu</a>
-                    <a href="#/jual-sapi">Tambah pesanan Sapi</a>
-                    <a href="#/jual-ikan">Tambah pesanan Ikan</a>
-                    <a href="#/jual-sayur">Tambah pesanan Sayuran</a>
-
+                  <div class="dropdown-group" id="mobileProductDropdownGroup">
+                    <div class="dropdown-label">Buat Pesanan Baru</div>
+                    <span class="dropdown-loading">Memuat...</span>
                   </div>
-
                 </div>
 
               </div>
@@ -272,7 +238,7 @@ const AppBar = {
     })
 
     const logout = () => {
-      localStorage.clear()
+      clearAuth()
       window.location.hash = '#/login'
       window.location.reload()
     }
@@ -285,6 +251,34 @@ const AppBar = {
       avatarDropdown?.classList.remove('show')
       productPanel?.classList.remove('show')
     })
+
+    this._loadCommodities()
+  },
+
+  async _loadCommodities() {
+    const desktopGroup = document.getElementById('productDropdownGroup')
+    const mobileGroup = document.getElementById('mobileProductDropdownGroup')
+
+    try {
+      const res = await fetch(`${BASE_URL}/commodities`)
+      const result = await res.json()
+      const commodities = (result.data || result).filter(c => c.aktif)
+
+      const linksHtml = commodities
+        .map(item => `<a href="#/jual/${item.id}">Tambah Pesanan ${item.nama}</a>`)
+        .join('')
+
+      const html = `<div class="dropdown-label">Buat Pesanan Baru</div>${linksHtml}`
+
+      if (desktopGroup) desktopGroup.innerHTML = html
+      if (mobileGroup) mobileGroup.innerHTML = html
+    } catch (err) {
+      console.error('Gagal ambil daftar komoditas:', err)
+      const errorHtml = `<div class="dropdown-label">Buat Pesanan Baru</div><span class="dropdown-error">Gagal memuat</span>`
+
+      if (desktopGroup) desktopGroup.innerHTML = errorHtml
+      if (mobileGroup) mobileGroup.innerHTML = errorHtml
+    }
   },
 }
 
