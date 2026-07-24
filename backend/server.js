@@ -23,43 +23,55 @@ app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-  return res.status(400).json({
-    status: 'fail',
-    message: 'Semua field wajib diisi.'
-  });
-}
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Semua field wajib diisi.'
+    });
+  }
 
-if (password.length < 8) {
-  return res.status(400).json({
-    status: 'fail',
-    message: 'Password minimal 8 karakter.'
-  });
-}
+  if (password.length < 8) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Password minimal 8 karakter.'
+    });
+  }
 
   try {
-    // cek email sudah ada atau belum
+    // cek email sudah ada, dan cek status verifikasinya
     const [exist] = await pool.query(
-      'SELECT id FROM users WHERE email = ?',
+      'SELECT id, is_verified FROM users WHERE email = ?',
       [email]
     );
-
-    if (exist.length > 0) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Email sudah terdaftar'
-      });
-    }
 
     const otp = crypto.randomInt(100000, 999999).toString();
     const expiry = new Date(Date.now() + 10 * 60 * 1000);
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await pool.query(
-      `INSERT INTO users
-      (full_name,email,password,otp_code,otp_expiry,is_verified)
-      VALUES (?,?,?,?,?,false)`,
-      [name, email, hashedPassword, otp, expiry]
-    );
+    if (exist.length > 0) {
+      if (exist[0].is_verified) {
+        // Sudah verified beneran -> baru ditolak
+        return res.status(400).json({
+          status: 'fail',
+          message: 'Email sudah terdaftar'
+        });
+      }
+
+      // Belum verified -> update row lama, kirim OTP baru
+      await pool.query(
+        `UPDATE users
+         SET full_name = ?, password = ?, otp_code = ?, otp_expiry = ?
+         WHERE email = ?`,
+        [name, hashedPassword, otp, expiry, email]
+      );
+    } else {
+      // Email baru sama sekali -> insert baru
+      await pool.query(
+        `INSERT INTO users
+        (full_name,email,password,otp_code,otp_expiry,is_verified)
+        VALUES (?,?,?,?,?,false)`,
+        [name, email, hashedPassword, otp, expiry]
+      );
+    }
 
     await transporter.sendMail({
       from: `"Dunax Farm Admin" <${process.env.EMAIL_USER}>`,
